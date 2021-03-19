@@ -261,30 +261,30 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.EventBus.RabbitMQ
 
             if (_subsManager.HasSubscriptionsForEvent(eventName))
             {
-                    var subscriptions = _subsManager.GetHandlersForEvent(eventName);
-                    foreach (var subscription in subscriptions)
+                var subscriptions = _subsManager.GetHandlersForEvent(eventName);
+                foreach (var subscription in subscriptions)
+                {
+                    if (subscription.IsDynamic)
                     {
-                        if (subscription.IsDynamic)
-                        {
-                            var handler = _serviceProvider.GetService(subscription.HandlerType) as IDynamicIntegrationEventHandler;
-                            if (handler == null) continue;
-                            dynamic eventData = JObject.Parse(message);
+                        var handler = _serviceProvider.GetService(subscription.HandlerType) as IDynamicIntegrationEventHandler;
+                        if (handler == null) continue;
+                        dynamic eventData = JObject.Parse(message);
 
-                            await Task.Yield();
-                            await handler.Handle(eventData);
-                        }
-                        else
-                        {
-                            var handler = _serviceProvider.GetService(subscription.HandlerType);
-                            if (handler == null) continue;
-                            var eventType = _subsManager.GetEventTypeByName(eventName);
-                            var integrationEvent = JsonConvert.DeserializeObject(message, eventType);
-                            var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
-
-                            await Task.Yield();
-                            await (Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { integrationEvent });
-                        }
+                        await Task.Yield();
+                        await handler.Handle(eventData);
                     }
+                    else
+                    {
+                        var handler = _serviceProvider.GetService(subscription.HandlerType);
+                        if (handler == null) continue;
+                        var eventType = _subsManager.GetEventTypeByName(eventName);
+                        var integrationEvent = JsonConvert.DeserializeObject(message, eventType);
+                        var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
+
+                        await Task.Yield();
+                        await (Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { integrationEvent });
+                    }
+                }
             }
             else
             {
