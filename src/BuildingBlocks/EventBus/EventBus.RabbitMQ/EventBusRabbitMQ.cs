@@ -122,12 +122,17 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.EventBus.RabbitMQ
             where T : IntegrationEvent
             where TH : IIntegrationEventHandler<T>
         {
-            var eventName = _subsManager.GetEventKey<T>();
+            Subscribe(typeof(T), typeof(TH));
+        }
+
+        public void Subscribe(Type eventType, Type eventHandlerType)
+        {
+            var eventName = _subsManager.GetEventKey(eventType);
             DoInternalSubscription(eventName);
 
-            _logger.LogInformation("Subscribing to event {EventName} with {EventHandler}", eventName, typeof(TH).GetGenericTypeName());
+            _logger.LogInformation("Subscribing to event {EventName} with {EventHandler}", eventName, eventHandlerType.GetGenericTypeName());
 
-            _subsManager.AddSubscription<T, TH>();
+            _subsManager.AddSubscription(eventType, eventHandlerType);
             StartBasicConsume();
         }
 
