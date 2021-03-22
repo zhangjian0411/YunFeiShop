@@ -19,9 +19,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Ordering.Domain\Ordering.Domain.csproj" />
     <ProjectReference Include="..\Ordering.Infrastructure\Ordering.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\Integration\Integration.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus\EventBus.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus.RabbitMQ\EventBus.RabbitMQ.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\SeedWork\SeedWork.Domain\SeedWork.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\IntegrationEvents\IntegrationEvents\IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\IntegrationEvents\IntegrationEvents.Abstractions\IntegrationEvents.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\IntegrationEvents\EventBus.RabbitMQ\EventBus.RabbitMQ.csproj" />
   </ItemGroup>
 
 

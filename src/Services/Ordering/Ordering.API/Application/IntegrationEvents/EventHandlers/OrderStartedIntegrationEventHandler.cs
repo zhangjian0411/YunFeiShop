@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using ZhangJian.YunFeiShop.BuildingBlocks.EventBus.Abstractions;
+using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Abstractions;
 using ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEvents.Events;
 
 namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEvents.EventHandlers

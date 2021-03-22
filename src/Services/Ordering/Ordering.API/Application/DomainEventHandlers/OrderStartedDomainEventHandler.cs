@@ -7,9 +7,9 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.DomainEventHand
 {
     public class OrderStartedDomainEventHandler : INotificationHandler<OrderStartedDomainEvent>
     {
-        private readonly BuildingBlocks.Integration.IIntegrationEventService _integrationEventService;
+        private readonly BuildingBlocks.IntegrationEvents.Abstractions.IIntegrationEventService _integrationEventService;
 
-        public OrderStartedDomainEventHandler(BuildingBlocks.Integration.IIntegrationEventService integrationEventService)
+        public OrderStartedDomainEventHandler(BuildingBlocks.IntegrationEvents.Abstractions.IIntegrationEventService integrationEventService)
         {
             _integrationEventService = integrationEventService;
         }

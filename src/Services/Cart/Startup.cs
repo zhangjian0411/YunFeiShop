@@ -2,21 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents;
-using ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAggregate;
-using ZhangJian.YunFeiShop.Services.Ordering.Infrastructure;
+using Microsoft.OpenApi.Models;
 
-namespace ZhangJian.YunFeiShop.Services.Ordering.API
+namespace Cart
 {
     public class Startup
     {
@@ -30,23 +26,12 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddControllers();
-
-            services.AddDbContext<OrderingContext>(options =>
+            services.AddSwaggerGen(c =>
             {
-                options.UseSqlite("Data Source=ordering.db",
-                    sqliteOptions => sqliteOptions.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name));
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cart", Version = "v1" });
             });
-            // services.AddDbContext<BuildingBlocks.IntegrationEvents.Persistence.IntegrationEventEntryContext>(options =>
-            // {
-            //     options.UseSqlite("Data Source=ordering.db",
-            //         sqliteOptions => sqliteOptions.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name));
-            // });
-            
-            services.AddMediatR(typeof(Startup));
-            services.AddIntegrationEventService<OrderingContext>("YunFeiShop_Ordering");
-
-            services.AddTransient(typeof(IOrderRepository), typeof(OrderRepository));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +40,8 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cart v1"));
             }
 
             app.UseHttpsRedirection();
@@ -67,8 +54,6 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API
             {
                 endpoints.MapControllers();
             });
-
-            app.UseIntegrationEventService();
         }
     }
 }

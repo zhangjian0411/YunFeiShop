@@ -17,13 +17,13 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly Infrastructure.OrderingContext _context;
-        private BuildingBlocks.Integration.IntegrationEventLog.IntegrationEventLogContext _eventLogContext;
+        // private BuildingBlocks.IntegrationEvents.Persistence.IntegrationEventEntryContext _eventLogContext;
 
-        public OrderController(IMediator mediator, Infrastructure.OrderingContext context, BuildingBlocks.Integration.IntegrationEventLog.IntegrationEventLogContext eventLogContext)
+        public OrderController(IMediator mediator, Infrastructure.OrderingContext context)
         {
             _mediator = mediator;
             _context = context;
-            _eventLogContext = eventLogContext;
+            // _eventLogContext = eventLogContext;
         }
         
         [HttpGet("createorder")]
@@ -48,166 +48,79 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Controllers
         {
             var orders = await _context.Orders.Include(o => o.OrderLines).ToArrayAsync();
 
-            var integrationEvents = await _eventLogContext.IntegrationEventLogs.ToArrayAsync();
+            // var integrationEvents = await _eventLogContext.IntegrationEventEntries.ToArrayAsync();
 
-            return Ok(new { Orders = orders, IntegrationEvents = integrationEvents });
+            return Ok(new { Orders = orders });
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> GetTest()
-        {
-            var buyerId = new Guid("BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBD");
+        // [HttpGet("test")]
+        // public async Task<IActionResult> GetTest()
+        // {
+        //     var buyerId = new Guid("BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBD");
 
-            // Output: <empty>;
-            System.Console.WriteLine("Current Transaction 1: {0}", _context.Database.CurrentTransaction?.TransactionId);
+        //     // Output: <empty>;
+        //     System.Console.WriteLine("Current Transaction 1: {0}", _context.Database.CurrentTransaction?.TransactionId);
 
-            using(var transaction = _context.Database.BeginTransaction())
-            {
-                // Output: 9036e379-0a3d-458f-ae7c-08b1f80fe6bf
-                System.Console.WriteLine("Current Transaction 2.1.1: {0}", _context.Database.CurrentTransaction?.TransactionId);
-                System.Console.WriteLine("Current Transaction 2.1.2: {0}", _eventLogContext.Database.CurrentTransaction?.TransactionId);
+        //     using(var transaction = _context.Database.BeginTransaction())
+        //     {
+        //         // Output: 9036e379-0a3d-458f-ae7c-08b1f80fe6bf
+        //         System.Console.WriteLine("Current Transaction 2.1.1: {0}", _context.Database.CurrentTransaction?.TransactionId);
+        //         System.Console.WriteLine("Current Transaction 2.1.2: {0}", _eventLogContext.Database.CurrentTransaction?.TransactionId);
                 
 
-                _eventLogContext.Database.UseTransaction(transaction.GetDbTransaction());
+        //         _eventLogContext.Database.UseTransaction(transaction.GetDbTransaction());
 
-                System.Console.WriteLine("Current Transaction 2.1.3: {0}", _context.Database.CurrentTransaction?.TransactionId);
-                System.Console.WriteLine("Current Transaction 2.1.4: {0}", _eventLogContext.Database.CurrentTransaction?.TransactionId);
-                System.Console.WriteLine("Current Transaction 2.1.5: {0}", _eventLogContext.Database.CurrentTransaction?.GetDbTransaction() == transaction.GetDbTransaction());
+        //         System.Console.WriteLine("Current Transaction 2.1.3: {0}", _context.Database.CurrentTransaction?.TransactionId);
+        //         System.Console.WriteLine("Current Transaction 2.1.4: {0}", _eventLogContext.Database.CurrentTransaction?.TransactionId);
+        //         System.Console.WriteLine("Current Transaction 2.1.5: {0}", _eventLogContext.Database.CurrentTransaction?.GetDbTransaction() == transaction.GetDbTransaction());
 
-                // _context.Database.UseTransaction(transaction.GetDbTransaction());\
-                var sameDbContextTransaction = _context.Database.CurrentTransaction == transaction;
-                var sameDbTransaction = _context.Database.CurrentTransaction.GetDbTransaction() == transaction.GetDbTransaction();
-                var sameDbContextTransaction2 = _eventLogContext.Database.CurrentTransaction == transaction;
-                var sameDbTransaction2 = _eventLogContext.Database.CurrentTransaction.GetDbTransaction() == transaction.GetDbTransaction();
-                System.Console.WriteLine($"------- {sameDbContextTransaction} -- {sameDbTransaction} -- {sameDbContextTransaction2} -- {sameDbTransaction2}");
-
-                
-                var order = new Order(buyerId,
-                    new[] {
-                        new OrderLine { ProductId = new Guid("99999999-9999-9999-9999-999999999999"),  Name = "P9", Quantity = 9 }
-                    });
-                _context.Add(order);
-                await _context.SaveChangesAsync();
-
-                var line = order.OrderLines.First();
-                line.Quantity = 19;
-                await _context.SaveChangesAsync();
-
-                transaction.Commit();
-                // Output: 9036e379-0a3d-458f-ae7c-08b1f80fe6bf
-                System.Console.WriteLine("Current Transaction 2.2: {0}", transaction.TransactionId);
-                // Output: <empty>;
-                System.Console.WriteLine("Current Transaction 2.3: {0}", _context.Database.CurrentTransaction?.TransactionId);
-            }
-
-            // Output: <empty>;
-            System.Console.WriteLine("Current Transaction 3: {0}", _context.Database.CurrentTransaction?.TransactionId);
-
-            using(var transaction = _context.Database.BeginTransaction())
-            {
-                System.Console.WriteLine("Current Transaction 4.1: {0}", _context.Database.CurrentTransaction?.TransactionId);
-
-                var order = _context.Orders.Include(o => o.OrderLines).SingleOrDefault(o => o.BuyerId == buyerId);
-                var line = order.OrderLines.First();
-                line.Quantity = 29;
-                await _context.SaveChangesAsync();
-
-                transaction.Commit();
-
-                System.Console.WriteLine("Current Transaction 4.2: {0}", transaction.TransactionId);
-                System.Console.WriteLine("Current Transaction 4.3: {0}", _context.Database.CurrentTransaction?.TransactionId);
-            }
-
-            System.Console.WriteLine("Current Transaction 5: {0}", _context.Database.CurrentTransaction?.TransactionId);
-
-            return Ok();
-        }
-
-        [HttpGet("test2")]
-        public async Task<IActionResult> GetTest2()
-        {
-            var userId = Guid.NewGuid();
-
-            string transactionId;
-
-            using(var transaction = _context.Database.BeginTransaction())
-            {
-                transactionId = transaction.TransactionId.ToString();
-
-                _eventLogContext.Database.UseTransaction(transaction.GetDbTransaction());
-
-                _eventLogContext.RemoveRange(_eventLogContext.IntegrationEventLogs);
-                await _eventLogContext.SaveChangesAsync();
+        //         // _context.Database.UseTransaction(transaction.GetDbTransaction());\
+        //         var sameDbContextTransaction = _context.Database.CurrentTransaction == transaction;
+        //         var sameDbTransaction = _context.Database.CurrentTransaction.GetDbTransaction() == transaction.GetDbTransaction();
+        //         var sameDbContextTransaction2 = _eventLogContext.Database.CurrentTransaction == transaction;
+        //         var sameDbTransaction2 = _eventLogContext.Database.CurrentTransaction.GetDbTransaction() == transaction.GetDbTransaction();
+        //         System.Console.WriteLine($"------- {sameDbContextTransaction} -- {sameDbTransaction} -- {sameDbContextTransaction2} -- {sameDbTransaction2}");
 
                 
-                
+        //         var order = new Order(buyerId,
+        //             new[] {
+        //                 new OrderLine { ProductId = new Guid("99999999-9999-9999-9999-999999999999"),  Name = "P9", Quantity = 9 }
+        //             });
+        //         _context.Add(order);
+        //         await _context.SaveChangesAsync();
 
+        //         var line = order.OrderLines.First();
+        //         line.Quantity = 19;
+        //         await _context.SaveChangesAsync();
 
+        //         transaction.Commit();
+        //         // Output: 9036e379-0a3d-458f-ae7c-08b1f80fe6bf
+        //         System.Console.WriteLine("Current Transaction 2.2: {0}", transaction.TransactionId);
+        //         // Output: <empty>;
+        //         System.Console.WriteLine("Current Transaction 2.3: {0}", _context.Database.CurrentTransaction?.TransactionId);
+        //     }
 
+        //     // Output: <empty>;
+        //     System.Console.WriteLine("Current Transaction 3: {0}", _context.Database.CurrentTransaction?.TransactionId);
 
-                
+        //     using(var transaction = _context.Database.BeginTransaction())
+        //     {
+        //         System.Console.WriteLine("Current Transaction 4.1: {0}", _context.Database.CurrentTransaction?.TransactionId);
 
-                var inteEvent = new Application.IntegrationEvents.Events.OrderStartedIntegrationEvent(userId);
-                var eventLogEntry = new BuildingBlocks.Integration.IntegrationEventLog.IntegrationEventLogEntry(inteEvent, transaction.TransactionId);
-                _eventLogContext.IntegrationEventLogs.Add(eventLogEntry);
-                await _eventLogContext.SaveChangesAsync();
+        //         var order = _context.Orders.Include(o => o.OrderLines).SingleOrDefault(o => o.BuyerId == buyerId);
+        //         var line = order.OrderLines.First();
+        //         line.Quantity = 29;
+        //         await _context.SaveChangesAsync();
 
+        //         transaction.Commit();
 
-                _eventLogContext.Database.UseTransaction(null);
+        //         System.Console.WriteLine("Current Transaction 4.2: {0}", transaction.TransactionId);
+        //         System.Console.WriteLine("Current Transaction 4.3: {0}", _context.Database.CurrentTransaction?.TransactionId);
+        //     }
 
+        //     System.Console.WriteLine("Current Transaction 5: {0}", _context.Database.CurrentTransaction?.TransactionId);
 
-
-                var order = await _context.Orders.Include(o => o.OrderLines).FirstAsync();
-                order.OrderLines.First().Name = $"BBAAAChange{DateTime.Now.ToShortTimeString()}";
-                await _context.SaveChangesAsync();
-
-                System.Console.WriteLine($"Test transaction 1.1: {transaction?.TransactionId}");
-                System.Console.WriteLine($"Test transaction 1.2: {_eventLogContext.Database.CurrentTransaction?.TransactionId}");
-                
-
-                System.Console.WriteLine($"Test transaction 1.3: {transaction?.TransactionId}");
-                System.Console.WriteLine($"Test transaction 1.4: {_eventLogContext.Database.CurrentTransaction?.TransactionId}");
-                // System.Console.WriteLine($"Test transaction 1.5: {transaction.GetDbTransaction() == _eventLogContext.Database.CurrentTransaction.GetDbTransaction()}");
-
-                // throw new Exception();
-                transaction.Commit();
-            }
-
-            // _eventLogContext.Database.UseTransaction(null);
-
-            var result = await _eventLogContext.IntegrationEventLogs
-                .Where(e => e.TransactionId == transactionId).ToListAsync();
-
-            // using(var transaction = _context.Database.BeginTransaction())
-            // {
-            //     System.Console.WriteLine($"Test transaction 2.1: {transaction?.TransactionId}");
-
-            //     var order = await _context.Orders.Include(o => o.OrderLines).FirstAsync();
-            //     order.OrderLines.First().Name = $"Change{DateTime.Now.ToShortTimeString()}";
-            //     await _context.SaveChangesAsync();
-
-            //     _eventLogContext = new BuildingBlocks.Integration.IntegrationEventLog.IntegrationEventLogContext(
-            //         new DbContextOptionsBuilder<BuildingBlocks.Integration.IntegrationEventLog.IntegrationEventLogContext>()
-            //             .UseSqlite(_context.Database.GetDbConnection())
-            //             .Options
-            //     );
-            //     System.Console.WriteLine($"Test transaction 2.2: {_eventLogContext.Database.CurrentTransaction?.TransactionId}");
-
-            //     _eventLogContext.Database.UseTransaction(transaction.GetDbTransaction());
-
-            //     var inteEvent = new Application.IntegrationEvents.Events.OrderStartedIntegrationEvent(userId);
-            //     var eventLogEntry = new BuildingBlocks.Integration.IntegrationEventLog.IntegrationEventLogEntry(inteEvent, transaction.TransactionId);
-            //     _eventLogContext.IntegrationEventLogs.Add(eventLogEntry);
-            //     await _eventLogContext.SaveChangesAsync();
-
-            //     System.Console.WriteLine($"Test transaction 2.3: {transaction?.TransactionId}");
-            //     System.Console.WriteLine($"Test transaction 2.4: {_eventLogContext.Database.CurrentTransaction?.TransactionId}");
-            //     System.Console.WriteLine($"Test transaction 2.5: {transaction.GetDbTransaction() == _eventLogContext.Database.CurrentTransaction.GetDbTransaction()}");
-
-            //     transaction.Commit();
-            // }
-
-            return Ok(result);
-        }
+        //     return Ok();
+        // }
     }
 }

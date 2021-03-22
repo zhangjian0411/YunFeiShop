@@ -1,13 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Domain;
 
-namespace ZhangJian.YunFeiShop.Services.Ordering.Infrastructure
+namespace ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Infrastructure
 {
     static class MediatorExtension
     {
-        public static async Task DispatchDomainEventsAsync(this IMediator mediator, OrderingContext ctx)
+        public static async Task DispatchDomainEventsAsync(this IMediator mediator, DbContext ctx)
         {
             var domainEntities = ctx.ChangeTracker
                 .Entries<Entity>()

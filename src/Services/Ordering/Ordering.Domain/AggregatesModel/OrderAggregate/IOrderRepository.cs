@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using ZhangJian.YunFeiShop.Services.Ordering.Domain.SeedWork;
+using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Domain;
 
 namespace ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAggregate
 {

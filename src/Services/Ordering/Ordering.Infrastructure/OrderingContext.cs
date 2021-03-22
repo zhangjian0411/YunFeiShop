@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage;
 using ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAggregate;
-using ZhangJian.YunFeiShop.Services.Ordering.Domain.SeedWork;
+using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Domain;
 
 namespace ZhangJian.YunFeiShop.Services.Ordering.Infrastructure
 {
