@@ -53,7 +53,6 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents
                 {
                     var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-
                     var factory = new ConnectionFactory()
                     {
                         HostName = "localhost",
