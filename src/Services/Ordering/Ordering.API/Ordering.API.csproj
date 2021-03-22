@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Ordering.Domain\Ordering.Domain.csproj" />
     <ProjectReference Include="..\Ordering.Infrastructure\Ordering.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\SeedWork\SeedWork.Domain\SeedWork.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\SeedWork\SeedWork.Infrastructure\SeedWork.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\IntegrationEvents\IntegrationEvents\IntegrationEvents.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\IntegrationEvents\IntegrationEvents.Abstractions\IntegrationEvents.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\IntegrationEvents\EventBus.RabbitMQ\EventBus.RabbitMQ.csproj" />
