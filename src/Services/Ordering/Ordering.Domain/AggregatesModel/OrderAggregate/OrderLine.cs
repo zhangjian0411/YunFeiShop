@@ -5,8 +5,8 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAgg
 {
     public class OrderLine : Entity
     {
-        public Guid ProductId { get; set; }
-        public string Name { get; set; }
-        public int Quantity { get; set; }
+        public Guid ProductId { get; init; }
+        public string Name { get; init; }
+        public int Quantity { get; init; }
     }
 }

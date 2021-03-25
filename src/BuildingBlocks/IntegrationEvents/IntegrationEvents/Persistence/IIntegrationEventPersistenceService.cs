@@ -15,6 +15,6 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Persistence
 
         Task<IEnumerable<IntegrationEventEntry>> RetrieveEventEntriesPendingToPublishAsync(Guid transactionId);
 
-        Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction);
+        Task SaveEventAsync(IntegrationEvent @event);
     }
 }

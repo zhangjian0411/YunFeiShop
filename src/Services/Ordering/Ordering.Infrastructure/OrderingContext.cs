@@ -16,8 +16,6 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Infrastructure
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderLine> OrderLines { get; set; }
 
-        public OrderingContext(DbContextOptions<OrderingContext> options) : base(options) { }
-
         public OrderingContext(DbContextOptions<OrderingContext> options, IMediator mediator) : base(options, mediator) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,11 +36,11 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Infrastructure
             orderConfiguration.Ignore(b => b.DomainEvents);
 
 
-            orderConfiguration
-                .Property<Guid>("_buyerId")
-                .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("BuyerId")
-                .IsRequired(true);
+            // orderConfiguration
+            //     .Property<Guid>("_buyerId")
+            //     .UsePropertyAccessMode(PropertyAccessMode.Field)
+            //     .HasColumnName("BuyerId")
+            //     .IsRequired(true);
 
 
             var navigation = orderConfiguration.Metadata.FindNavigation(nameof(Order.OrderLines));

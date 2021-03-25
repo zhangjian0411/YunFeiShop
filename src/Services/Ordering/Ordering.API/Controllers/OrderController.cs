@@ -17,13 +17,11 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly Infrastructure.OrderingContext _context;
-        // private BuildingBlocks.IntegrationEvents.Persistence.IntegrationEventEntryContext _eventLogContext;
 
         public OrderController(IMediator mediator, Infrastructure.OrderingContext context)
         {
             _mediator = mediator;
             _context = context;
-            // _eventLogContext = eventLogContext;
         }
         
         [HttpGet("createorder")]

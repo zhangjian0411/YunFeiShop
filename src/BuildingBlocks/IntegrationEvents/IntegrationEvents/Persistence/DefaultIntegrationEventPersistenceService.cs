@@ -4,18 +4,17 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Persistence
 {
-    public class DefaultIntegrationEventPersistenceService : IIntegrationEventPersistenceService
+    public class DefaultIntegrationEventPersistenceService<TDbContext> : IIntegrationEventPersistenceService where TDbContext : DbContext
     {
-        private readonly IntegrationEventEntryContext _eventEntryContext;
+        private readonly TDbContext _context;
         private readonly List<Type> _eventTypes;
 
-        public DefaultIntegrationEventPersistenceService(IntegrationEventEntryContext eventEntryContext) 
+        public DefaultIntegrationEventPersistenceService(TDbContext context) 
         {
-            _eventEntryContext = eventEntryContext;
+            _context = context;
             _eventTypes = Assembly.Load(Assembly.GetEntryAssembly().FullName)
                 .GetTypes()
                 .Where(t => t.Name.EndsWith(nameof(IntegrationEvent)))
@@ -41,7 +40,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Persistence
         {
             var tid = transactionId.ToString();
 
-            var result = await _eventEntryContext.IntegrationEventEntries
+            var result = await _context.Set<IntegrationEventEntry>()
                 .Where(e => e.TransactionId == tid && e.State == EventStateEnum.NotPublished).ToListAsync();
 
             if (result != null && result.Any())
@@ -53,36 +52,32 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Persistence
             return new List<IntegrationEventEntry>();
         }
 
-        public Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction)
+        public Task SaveEventAsync(IntegrationEvent @event)
         {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            var transaction = _context.Database.CurrentTransaction;
+
+            if (transaction == null) throw new ApplicationException("DbContext's current transaction shouldn't be null. SaveEventAsync need run in a transaction. ");
 
             var eventEntry = new IntegrationEventEntry(@event, transaction.TransactionId);
 
-            var noTransactionInUse = _eventEntryContext.Database.CurrentTransaction == null;
+            _context.Set<IntegrationEventEntry>().Add(eventEntry);
 
-            if (noTransactionInUse) _eventEntryContext.Database.UseTransaction(transaction.GetDbTransaction());
-
-            _eventEntryContext.IntegrationEventEntries.Add(eventEntry);
-
-            var result = _eventEntryContext.SaveChangesAsync();
-
-            if (noTransactionInUse) _eventEntryContext.Database.UseTransaction(null);
+            var result = _context.SaveChangesAsync();
 
             return result;
         }
 
         private Task UpdateEventStatus(Guid eventId, EventStateEnum status)
         {
-            var eventEntry = _eventEntryContext.IntegrationEventEntries.Single(ie => ie.EventId == eventId);
+            var eventEntry = _context.Set<IntegrationEventEntry>().Single(ie => ie.EventId == eventId);
             eventEntry.State = status;
 
             if (status == EventStateEnum.InProgress)
                 eventEntry.TimesSent++;
 
-            _eventEntryContext.IntegrationEventEntries.Update(eventEntry);
+            _context.Set<IntegrationEventEntry>().Update(eventEntry);
 
-            return _eventEntryContext.SaveChangesAsync();
+            return _context.SaveChangesAsync();
         }
     }
 }

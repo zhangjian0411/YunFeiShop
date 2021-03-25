@@ -16,7 +16,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.DomainEventHand
 
         public async Task Handle(OrderStartedDomainEvent domainEvent, CancellationToken cancellationToken)
         {
-            var integrEvent = new IntegrationEvents.Events.OrderStartedIntegrationEvent(domainEvent.BuyerId);
+            var integrEvent = new IntegrationEvents.Events.OrderStartedIntegrationEvent { UserId = domainEvent.BuyerId };
             await _integrationEventService.AddAndSaveEventAsync(integrEvent);
         }
     }

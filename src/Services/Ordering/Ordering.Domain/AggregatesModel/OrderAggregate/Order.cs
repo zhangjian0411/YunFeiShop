@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZhangJian.YunFeiShop.Services.Ordering.Domain.Events;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Domain;
+using ZhangJian.YunFeiShop.Services.Ordering.Domain.Events;
 
 namespace ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAggregate
 {
@@ -18,17 +18,20 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAgg
             _orderLines = new List<OrderLine>();
         }
 
-        public Order(Guid buyerId, IEnumerable<OrderLine> orderLines) : this()
+        public static Order NewDraft(Guid buyerId, IEnumerable<OrderLine> orderLines)
         {
-            BuyerId = buyerId;
-            _orderLines.AddRange(orderLines);
+            var order = new Order();
+            order.BuyerId = buyerId;
+            order._orderLines.AddRange(orderLines);
 
-            AddOrderStartedDomainEvent(buyerId);
+            order.AddOrderStartedDomainEvent(buyerId, order);
+
+            return order;
         }
 
-        private void AddOrderStartedDomainEvent(Guid userId)
+        private void AddOrderStartedDomainEvent(Guid buyerId, Order order)
         {
-            var orderStartedDomainEvent = new OrderStartedDomainEvent(userId, this);
+            var orderStartedDomainEvent = new OrderStartedDomainEvent(buyerId, order);
 
             this.AddDomainEvent(orderStartedDomainEvent);
         }

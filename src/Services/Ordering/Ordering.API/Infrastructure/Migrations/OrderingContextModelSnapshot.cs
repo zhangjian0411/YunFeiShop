@@ -14,7 +14,7 @@ namespace Ordering.API.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.3");
+                .HasAnnotation("ProductVersion", "5.0.4");
 
             modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAggregate.Order", b =>
                 {
@@ -23,12 +23,7 @@ namespace Ordering.API.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("BuyerId")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("BuyerId1");
-
-                    b.Property<Guid>("_buyerId")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("BuyerId");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

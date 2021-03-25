@@ -8,7 +8,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseIntegrationEventService(this IApplicationBuilder app)
+        public static IApplicationBuilder UseIntegrationEvent(this IApplicationBuilder app)
         {
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
 

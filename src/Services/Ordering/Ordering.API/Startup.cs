@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents;
+using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork;
 using ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAggregate;
 using ZhangJian.YunFeiShop.Services.Ordering.Infrastructure;
 
@@ -44,7 +44,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API
             // });
             
             services.AddMediatR(typeof(Startup));
-            services.AddIntegrationEventService<OrderingContext>("YunFeiShop_Ordering");
+            services.AddSeedWork<OrderingContext>("Ordering");
 
             services.AddTransient(typeof(IOrderRepository), typeof(OrderRepository));
         }
@@ -68,7 +68,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API
                 endpoints.MapControllers();
             });
 
-            app.UseIntegrationEventService();
+            app.UseSeedWork();
         }
     }
 }

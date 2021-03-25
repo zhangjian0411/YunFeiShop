@@ -9,30 +9,28 @@ using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Persistence;
 
 namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Services
 {
-    public class DefaultIntegrationEventService<TDbContext> : IIntegrationEventService, IHasDataContext where TDbContext : DbContext
+    public class DefaultIntegrationEventService<TDbContext> : IIntegrationEventService, IHasDbContext where TDbContext : DbContext
     {
         private readonly IEventBus _eventBus;
         private readonly TDbContext _dbContext;
-        private readonly Func<DbConnection, IIntegrationEventPersistenceService> _eventPersistenceServiceFactory;
         private readonly IIntegrationEventPersistenceService _eventPersistenceService;
         private readonly ILogger<DefaultIntegrationEventService<TDbContext>> _logger;
 
-        public DefaultIntegrationEventService(IEventBus eventBus, TDbContext dbContext, Func<DbConnection, IIntegrationEventPersistenceService> eventPersistenceServiceFactory, ILogger<DefaultIntegrationEventService<TDbContext>> logger)
+        public DefaultIntegrationEventService(IEventBus eventBus, TDbContext dbContext, IIntegrationEventPersistenceService eventPersistenceService, ILogger<DefaultIntegrationEventService<TDbContext>> logger)
         {
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _eventPersistenceServiceFactory = eventPersistenceServiceFactory ?? throw new ArgumentNullException(nameof(eventPersistenceServiceFactory));
-            _eventPersistenceService = _eventPersistenceServiceFactory(_dbContext.Database.GetDbConnection());
+            _eventPersistenceService = eventPersistenceService;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        DbContext IHasDataContext.DataContext => _dbContext;
+        DbContext IHasDbContext.DbContext => _dbContext;
 
         public async Task AddAndSaveEventAsync(IntegrationEvent evt)
         {
             _logger.LogInformation("----- Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id, evt);
 
-            await _eventPersistenceService.SaveEventAsync(evt, _dbContext.Database.CurrentTransaction);
+            await _eventPersistenceService.SaveEventAsync(evt);
         }
 
         public async Task PublishEventsAsync(Guid transactionId)

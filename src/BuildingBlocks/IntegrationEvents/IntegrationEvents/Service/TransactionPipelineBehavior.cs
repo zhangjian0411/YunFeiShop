@@ -18,9 +18,9 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Services
             IIntegrationEventService integrationEventService,
             ILogger<TransactionPipelineBehavior<TRequest, TResponse>> logger)
         {
-            _integrationEventService = integrationEventService ?? throw new ArgumentException(nameof(integrationEventService));
-            _dbContext = (_integrationEventService as IHasDataContext)?.DataContext ?? throw new ArgumentException(nameof(integrationEventService));
-            _logger = logger ?? throw new ArgumentException(nameof(ILogger));
+            _integrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
+            _dbContext = (_integrationEventService as IHasDbContext)?.DbContext ?? throw new ArgumentException("The implementation of IIntegrationEventService also need implement interface IHasDbContext.", nameof(integrationEventService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(ILogger));
         }
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
