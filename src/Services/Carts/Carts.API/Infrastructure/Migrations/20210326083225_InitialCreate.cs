@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Carts.API.Migrations
+namespace ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Migrations
 {
     public partial class InitialCreate : Migration
     {
@@ -50,7 +50,7 @@ namespace Carts.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CartLines",
+                name: "CartItems",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -61,9 +61,9 @@ namespace Carts.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CartLines", x => x.Id);
+                    table.PrimaryKey("PK_CartItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CartLines_Carts_CartId",
+                        name: "FK_CartItems_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
                         principalColumn: "Id",
@@ -71,15 +71,15 @@ namespace Carts.API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartLines_CartId",
-                table: "CartLines",
+                name: "IX_CartItems_CartId",
+                table: "CartItems",
                 column: "CartId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CartLines");
+                name: "CartItems");
 
             migrationBuilder.DropTable(
                 name: "IntegrationEventEntries");

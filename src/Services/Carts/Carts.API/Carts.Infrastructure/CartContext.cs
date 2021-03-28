@@ -8,7 +8,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Infrastructure
     public class CartContext : DbContextBase
     {
         public DbSet<Cart> Carts { get; set; }
-        public DbSet<CartLine> CartLines { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         public CartContext(DbContextOptions<CartContext> options, IMediator mediator) : base(options, mediator) { }
     }

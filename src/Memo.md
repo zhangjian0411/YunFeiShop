@@ -2,3 +2,30 @@
     See line 226 
     at private async Task Consumer_Received(object sender, BasicDeliverEventArgs eventArgs) 
     at BuildingBlocks\IntegrationEvents\EventBus.RabbitMQ\EventBusRabbitMQ.cs 
+
+## AutoMapper: Destination object type must have a constructor with 0 args and properties must have set accessor, so the mapping can work.
+The constructor and set accessor could be `public`, `protected` or `private`.  
+For example:
+```c#
+public class AddProductToCartCommand : IRequest<bool>
+{
+    public Guid BuyerId { get; init; }
+    public Guid ProductId { get; init; }
+}
+```
+or
+```c#
+public class AddProductToCartCommand : IRequest<bool>
+{
+    public Guid BuyerId { get; private set; }
+    public Guid ProductId { get; private set; }
+
+    private AddProductToCartCommand() { }
+
+    public AddProductToCartCommand(Guid buyerId, Guid productId)
+    {
+        BuyerId = buyerId;
+        ProductId = productId;
+    }
+}
+```

@@ -29,7 +29,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Infrastructure
 
         public async Task<Cart> GetAsync(Guid buyerId)
         {
-            return await _context.Carts.FirstOrDefaultAsync(o => o.BuyerId == buyerId);
+            return await _context.Carts.Include(c => c.Items).SingleOrDefaultAsync(o => o.BuyerId == buyerId);
         }
     }
 }

@@ -1,25 +1,42 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Domain;
-using ZhangJian.YunFeiShop.Services.Carts.Domain.Events;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate
 {
     public class Cart : Entity, IAggregateRoot
     {
-        public Guid BuyerId { get; init; }
-        public IReadOnlyCollection<CartLine> Lines { get; init; }
+        public Guid BuyerId { get; private set; }
 
-        public Cart()
+        private readonly List<CartItem> _items;
+        public IReadOnlyCollection<CartItem> Items => _items;
+
+        public Cart(Guid buyerId)
         {
-            AddCartCreatedDomainEvent();
+            _items = new List<CartItem>();
+
+            BuyerId = buyerId;
         }
 
-        private void AddCartCreatedDomainEvent()
+        public void AddItem(Guid productId)
         {
-            var cartCreatedDomainEvent = new CartCreatedDomainEvent { CartId = "test cart id 1" };
+            var item = _items.SingleOrDefault(i => i.ProductId == productId);
 
-            this.AddDomainEvent(cartCreatedDomainEvent);
+            if (item != null)
+            {
+                item.Quantity += 1;
+            }
+            else
+            {
+                item = new CartItem(productId, 1, true);
+                _items.Add(item);
+            }
+        }
+
+        public void RemoveItems(Guid[] productIds)
+        {
+            _items.RemoveAll(i => productIds.Contains(i.ProductId));
         }
     }
 }

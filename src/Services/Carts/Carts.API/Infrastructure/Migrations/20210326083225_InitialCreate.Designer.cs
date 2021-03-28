@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZhangJian.YunFeiShop.Services.Carts.Infrastructure;
 
-namespace Carts.API.Migrations
+namespace ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Migrations
 {
     [DbContext(typeof(CartContext))]
-    partial class CartContextModelSnapshot : ModelSnapshot
+    [Migration("20210326083225_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +81,7 @@ namespace Carts.API.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.CartLine", b =>
+            modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -101,19 +103,19 @@ namespace Carts.API.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.ToTable("CartLines");
+                    b.ToTable("CartItems");
                 });
 
-            modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.CartLine", b =>
+            modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.CartItem", b =>
                 {
                     b.HasOne("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.Cart", null)
-                        .WithMany("Lines")
+                        .WithMany("Items")
                         .HasForeignKey("CartId");
                 });
 
             modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.Cart", b =>
                 {
-                    b.Navigation("Lines");
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
