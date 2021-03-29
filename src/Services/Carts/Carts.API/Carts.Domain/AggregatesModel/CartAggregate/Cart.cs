@@ -26,6 +26,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggrega
             if (item != null)
             {
                 item.Quantity += 1;
+                item.Selected = true;
             }
             else
             {

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,7 +16,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork;
 using ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Services;
-using ZhangJian.YunFeiShop.Services.Carts.Application.Behaviors;
 using ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate;
 using ZhangJian.YunFeiShop.Services.Carts.Infrastructure;
 
@@ -33,7 +33,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers();services.AddMemoryCache();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cart", Version = "v1" });
@@ -47,7 +47,6 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API
 
             services.AddMediatR(typeof(Startup));
 
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
             services.AddSeedWork<CartContext>("Carts");
 
             services.AddAutoMapper(typeof(Startup));

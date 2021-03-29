@@ -29,3 +29,7 @@ public class AddProductToCartCommand : IRequest<bool>
     }
 }
 ```
+
+## EF Core: EF Core does not use cache by default.
+
+## Commands: Command should be a record type in order to log its content. The record type overrides its ToString() method.

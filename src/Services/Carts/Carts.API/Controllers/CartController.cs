@@ -22,7 +22,6 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
         private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
         private readonly ILogger<CartController> _logger;
-
         public CartController(IMediator mediator, IIdentityService identityService, IMapper mapper, ILogger<CartController> logger)
         {
             _mediator = mediator;
@@ -31,34 +30,71 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
-        {
-            var addProductToCartCommand = new AddItemToCartCommand
-            {
-                BuyerId = new Guid("DDDDDDDD-AAAA-AAAA-AAAA-AAAAAAAAAAAB"),
-                ProductId = new Guid("FFFAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAB")
-            };
-            
-            await _mediator.Send(addProductToCartCommand);
+        // [HttpPost("addtocart")]
+        // public async Task<IActionResult> AddToCartAsync()
+        // {
+        //     var command = new AddItemToCartCommand
+        //     {
+        //         BuyerId = _identityService.GetUserIdentity(),
+        //         ProductId = new Guid("11111112-1111-1111-1111-111111111111")
+        //     };
+        //     var identityCommand = new IdentifiedCommand<AddItemToCartCommand, bool>(command, new Guid("99999999-1111-1111-1111-111111111111"));
+        //     await _mediator.Send(identityCommand);
 
-            return Ok("Yes");
+        //     return Ok();
+        // }
+
+        [HttpPut("checkout")]
+        public async Task<IActionResult> CheckOutAsync([FromHeader(Name = "x-requestid")] string requestId)
+        {
+            bool commandResult = false;
+
+            if (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty)
+            {
+                var identifiedCommand = new IdentifiedCommand<CheckOutCommand, bool>(
+                        new CheckOutCommand { BuyerId = _identityService.GetUserIdentity() },
+                        guid);
+
+                commandResult = await _mediator.Send(identifiedCommand);
+            }
+
+            if (!commandResult)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
 
         [HttpPut("items")]
-        public async Task<IActionResult> UpdateCartItemAsync(UpdateCartItemRequest request)
+        public async Task<IActionResult> UpdateCartItemAsync(UpdateCartItemRequest request, [FromHeader(Name = "x-requestid")] string requestId)
         {
-            _logger.LogInformation("Get UpdateCartItemRequest: {0}", Newtonsoft.Json.JsonConvert.SerializeObject(request));
-            var command = _mapper.Map<UpdateCartItemCommand>(request);
-            _logger.LogInformation("Get UpdateCartItemCommand: {0}", Newtonsoft.Json.JsonConvert.SerializeObject(command));
+            bool commandResult = false;
 
-            return Ok(command);
+            if (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty)
+            {
+                var command = _mapper.Map<UpdateCartItemCommand>(request);
+                var identifiedCommand = new IdentifiedCommand<UpdateCartItemCommand, bool>(command, guid);
+
+                commandResult = await _mediator.Send(identifiedCommand);
+            }
+
+            if (!commandResult)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
 
-        [HttpDelete("/item/{itemId}")]
-        public async Task<IActionResult> RemoveCartLineAsync()
+        [HttpDelete("items")]
+        public async Task<IActionResult> RemoveCartItemsAsync(RemoveCartItemsRequest request)
         {
-            return NotFound();
+            var command = _mapper.Map<RemoveCartItemsCommand>(request);
+
+            await _mediator.Send(command);
+
+            return Ok();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using ZhangJian.YunFeiShop.Services.Carts.Application.Exceptions;
 using ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
@@ -19,8 +20,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
         public async Task<bool> Handle(RemoveCartItemsCommand request, CancellationToken cancellationToken)
         {
             var cart = await _cartRepository.GetAsync(request.BuyerId);
-
-            if (cart == null) return true;
+            if (cart == null) throw new CartNotFoundException(request.BuyerId);
 
             cart.RemoveItems(request.ProductIds);
 

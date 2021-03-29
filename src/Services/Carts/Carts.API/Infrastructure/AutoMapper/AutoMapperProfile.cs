@@ -14,6 +14,8 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.AutoMapper
 
             CreateMap<UpdateCartItemRequest, UpdateCartItemCommand>()
                 .ForMember(dest => dest.BuyerId, options => options.MapFrom<UserIdentityResolver>());
+            CreateMap<RemoveCartItemsRequest, RemoveCartItemsCommand>()
+                .ForMember(dest => dest.BuyerId, options => options.MapFrom<UserIdentityResolver>());
         }
     }
 }
