@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents;
 using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.EventBus.RabbitMQ;
+using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Application.Behaviors;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Infrastructure;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Infrastructure.Idempotency;
 
@@ -18,6 +19,8 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.SeedWork
 
             services.AddEventBusRabbitMQ(clientName);
 
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+            
             services.AddIntegrationEvent<T>();
             
             services.AddIdentifiedCommand<T>();
