@@ -32,4 +32,6 @@ public class AddProductToCartCommand : IRequest<bool>
 
 ## EF Core: EF Core does not use cache by default.
 
+## EF Core: DbContext.Update() method can also add new entity.
+
 ## Commands: Command should be a record type in order to log its content. The record type overrides its ToString() method.

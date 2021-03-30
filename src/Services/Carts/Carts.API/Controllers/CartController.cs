@@ -11,6 +11,7 @@ using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Application.Commands;
 using ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.RequestModels;
 using ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Services;
 using ZhangJian.YunFeiShop.Services.Carts.Application.Commands;
+using ZhangJian.YunFeiShop.Services.Carts.Application.Queries;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
 {
@@ -19,30 +20,40 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
     public class CartController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICartQueries _cartQueries;
         private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
         private readonly ILogger<CartController> _logger;
-        public CartController(IMediator mediator, IIdentityService identityService, IMapper mapper, ILogger<CartController> logger)
+        public CartController(IMediator mediator, ICartQueries cartQueries, IIdentityService identityService, IMapper mapper, ILogger<CartController> logger)
         {
             _mediator = mediator;
+            _cartQueries = cartQueries;
             _identityService = identityService;
             _mapper = mapper;
             _logger = logger;
         }
 
-        // [HttpPost("addtocart")]
-        // public async Task<IActionResult> AddToCartAsync()
-        // {
-        //     var command = new AddItemToCartCommand
-        //     {
-        //         BuyerId = _identityService.GetUserIdentity(),
-        //         ProductId = new Guid("11111112-1111-1111-1111-111111111111")
-        //     };
-        //     var identityCommand = new IdentifiedCommand<AddItemToCartCommand, bool>(command, new Guid("99999999-1111-1111-1111-111111111111"));
-        //     await _mediator.Send(identityCommand);
+        [HttpGet]
+        public async Task<IActionResult> GetCartAsync()
+        {
+            var cart = await _cartQueries.GetCartAsync(_identityService.GetUserIdentity());
 
-        //     return Ok();
-        // }
+            return Ok(cart);
+        }
+
+        [HttpPost("addtocart")]
+        public async Task<IActionResult> AddToCartAsync()
+        {
+            var command = new AddItemToCartCommand
+            {
+                BuyerId = _identityService.GetUserIdentity(),
+                ProductId = new Guid("11111112-1111-1111-1111-111111111111")
+            };
+            
+            await _mediator.Send(command);
+
+            return Ok();
+        }
 
         [HttpPut("checkout")]
         public async Task<IActionResult> CheckOutAsync([FromHeader(Name = "x-requestid")] string requestId)
@@ -67,14 +78,14 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
         }
 
         [HttpPut("items")]
-        public async Task<IActionResult> UpdateCartItemAsync(UpdateCartItemRequest request, [FromHeader(Name = "x-requestid")] string requestId)
+        public async Task<IActionResult> UpdateOrCreateCartItemAsync(UpdateOrCreateCartItemRequest request, [FromHeader(Name = "x-requestid")] string requestId)
         {
             bool commandResult = false;
 
             if (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty)
             {
-                var command = _mapper.Map<UpdateCartItemCommand>(request);
-                var identifiedCommand = new IdentifiedCommand<UpdateCartItemCommand, bool>(command, guid);
+                var command = _mapper.Map<UpdateOrCreateCartItemCommand>(request);
+                var identifiedCommand = new IdentifiedCommand<UpdateOrCreateCartItemCommand, bool>(command, guid);
 
                 commandResult = await _mediator.Send(identifiedCommand);
             }

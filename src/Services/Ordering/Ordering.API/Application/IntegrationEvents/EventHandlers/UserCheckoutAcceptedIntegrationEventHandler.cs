@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Abstractions;
 using ZhangJian.YunFeiShop.Services.Ordering.API.Application.Commands;
 using ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEvents.Events;
@@ -23,9 +22,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEven
 
         public async Task Handle(UserCheckoutAcceptedIntegrationEvent @event)
         {
-            _logger.LogInformation($"Begin to handle integration event {JsonConvert.SerializeObject(@event)}");
-
-            var command = new CreateOrderCommand(@event.UserId, @event.CheckoutLines.Select(cl => new OrderLine(cl.ProductId, cl.ProductName, cl.Quantity)));
+            var command = new CreateOrderCommand(@event.UserId, @event.CheckoutLines.Select(cl => new OrderLine(cl.ProductId, "Hard Code", cl.Quantity)).ToArray());
             
             await _mediator.Send(command);
         }

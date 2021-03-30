@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Ordering.API.Migrations
+namespace Ordering.API.Infrastructure.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class AddSeedWorkEntities : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,12 +23,28 @@ namespace Ordering.API.Migrations
                 {
                     table.PrimaryKey("PK_IntegrationEventEntries", x => x.EventId);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Requests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Time = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Requests", x => x.Id);
+                });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "IntegrationEventEntries");
+
+            migrationBuilder.DropTable(
+                name: "Requests");
         }
     }
 }

@@ -19,9 +19,9 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents
         }
 
         [JsonProperty]
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
 
         [JsonProperty]
-        public DateTime CreationDate { get; }
+        public DateTime CreationDate { get; private set; }
     }
 }

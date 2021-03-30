@@ -18,7 +18,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.Commands
 
         public async Task<bool> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var orderLines = request.OrderLines.Select(o => new OrderLine { ProductId = o.ProductId, Name = o.Name, Quantity = o.Quantity });
+            var orderLines = request.OrderLines.Select(o => new Domain.AggregatesModel.OrderAggregate.OrderLine { ProductId = o.ProductId, Name = o.Name, Quantity = o.Quantity });
             var order = Order.NewDraft(request.UserId, orderLines);
             _orderRepository.Add(order);
 

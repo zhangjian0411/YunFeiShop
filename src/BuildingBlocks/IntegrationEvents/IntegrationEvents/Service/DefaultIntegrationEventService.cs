@@ -3,6 +3,7 @@ using System.Data.Common;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Abstractions;
 using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.EventBus;
 using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Persistence;
@@ -28,7 +29,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Services
 
         public async Task AddAndSaveEventAsync(IntegrationEvent evt)
         {
-            _logger.LogInformation("----- Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id, evt);
+            _logger.LogTrace("----- Enqueuing integration event {IntegrationEventId} to repository ({IntegrationEventName} {@IntegrationEvent})", evt.Id, evt.GetGenericTypeName(), JsonConvert.SerializeObject(evt));
 
             await _eventPersistenceService.SaveEventAsync(evt);
         }
@@ -39,7 +40,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Services
 
             foreach (var logEvt in pendingLogEvents)
             {
-                _logger.LogInformation("----- Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", logEvt.EventId, logEvt.IntegrationEvent);
+                _logger.LogTrace("----- Publishing integration event: {IntegrationEventId} - ({IntegrationEventName} {Content})", logEvt.EventId, logEvt.EventTypeShortName, logEvt.Content);
 
                 try
                 {

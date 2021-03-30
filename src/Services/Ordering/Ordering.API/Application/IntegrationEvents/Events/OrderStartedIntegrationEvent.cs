@@ -6,5 +6,11 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEven
     public class OrderStartedIntegrationEvent : IntegrationEvent
     {
         public Guid UserId { get; init; }
+        public OrderLine[] OrderLines { get; init; }
+
+        public class OrderLine
+        {
+            public Guid ProductId { get; init;}
+        } 
     }
 }

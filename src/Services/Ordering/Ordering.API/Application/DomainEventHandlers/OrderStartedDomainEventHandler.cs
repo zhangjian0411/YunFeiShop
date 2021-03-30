@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ZhangJian.YunFeiShop.Services.Ordering.Domain.Events;
+using static ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEvents.Events.OrderStartedIntegrationEvent;
 
 namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.DomainEventHandlers
 {
@@ -16,7 +18,12 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.DomainEventHand
 
         public async Task Handle(OrderStartedDomainEvent domainEvent, CancellationToken cancellationToken)
         {
-            var integrEvent = new IntegrationEvents.Events.OrderStartedIntegrationEvent { UserId = domainEvent.BuyerId };
+            var integrEvent = new IntegrationEvents.Events.OrderStartedIntegrationEvent
+            {
+                UserId = domainEvent.BuyerId,
+                OrderLines = domainEvent.Order.OrderLines.Select(line => new OrderLine { ProductId = line.ProductId }).ToArray()
+            }; 
+            System.Console.WriteLine($"OrderStartedIntegrationEvent: {Newtonsoft.Json.JsonConvert.SerializeObject(integrEvent)}");
             await _integrationEventService.AddAndSaveEventAsync(integrEvent);
         }
     }

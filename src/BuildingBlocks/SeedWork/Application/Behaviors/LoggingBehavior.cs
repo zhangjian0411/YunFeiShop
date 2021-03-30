@@ -15,9 +15,9 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Application.Behaviors
         {
             var commandName = request.GetGenericTypeName();
 
-            _logger.LogInformation("----- Handling command {CommandName} ({@Command})", commandName, request);
+            _logger.LogTrace("----- Handling command {CommandName} ({@Command})", commandName, Newtonsoft.Json.JsonConvert.SerializeObject(request));
             var response = await next();
-            _logger.LogInformation("----- Command {CommandName} handled - response: {@Response}", commandName, response);
+            _logger.LogTrace("----- Handled command {CommandName} - response: {@Response}", commandName, response);
 
             return response;
         }

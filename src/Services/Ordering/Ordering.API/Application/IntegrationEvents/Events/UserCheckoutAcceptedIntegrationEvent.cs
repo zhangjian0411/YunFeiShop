@@ -11,7 +11,6 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEven
         public class CheckoutLine
         {
             public Guid ProductId { get; init; }
-            public string ProductName { get; init; }
             public int Quantity { get; init; }
         }
     }

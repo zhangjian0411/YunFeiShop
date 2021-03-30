@@ -206,6 +206,8 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.EventBus.RabbitM
             var eventName = eventArgs.RoutingKey;
             var message = Encoding.UTF8.GetString(eventArgs.Body.Span);
 
+            _logger.LogTrace("----- Received RabbitMQ message: {EventName} ({Message})", eventName, message);
+
             try
             {
                 if (message.ToLowerInvariant().Contains("throw-fake-exception"))

@@ -43,14 +43,16 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Services
 
                     using (var transaction = await _dbContext.Database.BeginTransactionAsync())
                     {
-                        _logger.LogInformation("----- Begin transaction {TransactionId} for {CommandName} ({@Command})", transaction.TransactionId, typeName, request);
+                        _logger.LogTrace("----- Begin transaction {TransactionId} for {CommandName}", transaction.TransactionId, typeName);
 
                         response = await next();
 
-                        _logger.LogInformation("----- Commit transaction {TransactionId} for {CommandName}", transaction.TransactionId, typeName);
+                        _logger.LogTrace("----- Committing transaction {TransactionId} for {CommandName}", transaction.TransactionId, typeName);
 
                         await _dbContext.SaveChangesAsync();
                         transaction.Commit();
+
+                        _logger.LogTrace("----- Committed transaction {TransactionId} for {CommandName}", transaction.TransactionId, typeName);
 
                         transactionId = transaction.TransactionId;
                     }
@@ -62,7 +64,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "ERROR Handling transaction for {CommandName} ({@Command})", typeName, request);
+                _logger.LogError(ex, "ERROR Handling transaction for {CommandName} ({@Command})", typeName, Newtonsoft.Json.JsonConvert.SerializeObject(request));
 
                 throw;
             }

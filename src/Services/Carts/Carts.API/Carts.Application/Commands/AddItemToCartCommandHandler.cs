@@ -27,14 +27,11 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
             if (cart == null)
             {
                 cart = new Cart(request.BuyerId);
-                cart.AddItem(request.ProductId);
-                _cartRepository.Add(cart);
             }
-            else
-            {
-                cart.AddItem(request.ProductId);
-                _cartRepository.Update(cart);
-            }
+
+            cart.AddItem(request.ProductId);
+
+            _cartRepository.Update(cart);
 
             return await _cartRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
         }

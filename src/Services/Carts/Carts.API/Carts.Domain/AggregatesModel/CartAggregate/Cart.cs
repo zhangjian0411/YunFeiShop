@@ -19,7 +19,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggrega
             BuyerId = buyerId;
         }
 
-        public void AddItem(Guid productId)
+        public CartItem AddItem(Guid productId)
         {
             var item = _items.SingleOrDefault(i => i.ProductId == productId);
 
@@ -33,6 +33,8 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggrega
                 item = new CartItem(productId, 1, true);
                 _items.Add(item);
             }
+
+            return item;
         }
 
         public void RemoveItems(Guid[] productIds)

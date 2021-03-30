@@ -7,9 +7,9 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.Commands
     public class CreateOrderCommand : IRequest<bool>
     {
         public Guid UserId { get; }
-        public IEnumerable<OrderLine> OrderLines { get; }
+        public OrderLine[] OrderLines { get; }
 
-        public CreateOrderCommand(Guid userId, IEnumerable<OrderLine> orderLines)
+        public CreateOrderCommand(Guid userId, OrderLine[] orderLines)
         {
             UserId = userId;
             OrderLines = orderLines;

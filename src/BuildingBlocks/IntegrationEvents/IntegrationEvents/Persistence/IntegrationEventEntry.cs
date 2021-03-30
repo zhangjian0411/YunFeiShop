@@ -33,6 +33,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Persistence
         public IntegrationEventEntry DeserializeJsonContent(Type type)
         {
             IntegrationEvent = JsonConvert.DeserializeObject(Content, type) as IntegrationEvent;
+            
             return this;
         }
     }

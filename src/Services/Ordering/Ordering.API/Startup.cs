@@ -37,11 +37,6 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API
                 options.UseSqlite("Data Source=ordering.db",
                     sqliteOptions => sqliteOptions.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name));
             });
-            // services.AddDbContext<BuildingBlocks.IntegrationEvents.Persistence.IntegrationEventEntryContext>(options =>
-            // {
-            //     options.UseSqlite("Data Source=ordering.db",
-            //         sqliteOptions => sqliteOptions.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name));
-            // });
             
             services.AddMediatR(typeof(Startup));
             services.AddSeedWork<OrderingContext>("Ordering");

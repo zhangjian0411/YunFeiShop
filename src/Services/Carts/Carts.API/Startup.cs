@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork;
 using ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Services;
+using ZhangJian.YunFeiShop.Services.Carts.Application.Queries;
 using ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate;
 using ZhangJian.YunFeiShop.Services.Carts.Infrastructure;
 
@@ -33,7 +34,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();services.AddMemoryCache();
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cart", Version = "v1" });
@@ -51,8 +52,8 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API
 
             services.AddAutoMapper(typeof(Startup));
 
-
-            services.AddTransient(typeof(ICartRepository), typeof(CartRepository));
+            services.AddTransient<ICartQueries, CartQueries>();
+            services.AddTransient<ICartRepository, CartRepository>();
             services.AddTransient<IIdentityService, FakeIdentityService>();
         }
 

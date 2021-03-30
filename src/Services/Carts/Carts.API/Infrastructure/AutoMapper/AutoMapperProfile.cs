@@ -12,7 +12,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.AutoMapper
             SourceMemberNamingConvention = new ExactMatchNamingConvention();
             DestinationMemberNamingConvention = new ExactMatchNamingConvention();
 
-            CreateMap<UpdateCartItemRequest, UpdateCartItemCommand>()
+            CreateMap<UpdateOrCreateCartItemRequest, UpdateOrCreateCartItemCommand>()
                 .ForMember(dest => dest.BuyerId, options => options.MapFrom<UserIdentityResolver>());
             CreateMap<RemoveCartItemsRequest, RemoveCartItemsCommand>()
                 .ForMember(dest => dest.BuyerId, options => options.MapFrom<UserIdentityResolver>());

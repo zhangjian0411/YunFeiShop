@@ -24,20 +24,20 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Controllers
             _context = context;
         }
         
-        [HttpGet("createorder")]
-        public async Task<IActionResult> CreateOrder()
-        {
-            var buyerId = new Guid("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAB");
-            var orderLines = new[] {
-                new CreateOrderCommand.OrderLine(new Guid("11111111-1111-1111-1111-111111111111"), "Prod1", 1),
-                new CreateOrderCommand.OrderLine(new Guid("22222222-1111-1111-1111-111111111111"), "Prod2", 2)
-            };
-            var command = new CreateOrderCommand(buyerId, orderLines);
+        // [HttpGet("createorder")]
+        // public async Task<IActionResult> CreateOrder()
+        // {
+        //     var buyerId = new Guid("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAB");
+        //     var orderLines = new[] {
+        //         new OrderLine(new Guid("11111111-1111-1111-1111-111111111111"), "Prod1", 1),
+        //         new OrderLine(new Guid("22222222-1111-1111-1111-111111111111"), "Prod2", 2)
+        //     };
+        //     var command = new CreateOrderCommand(buyerId, orderLines);
 
-            await _mediator.Send(command);
+        //     await _mediator.Send(command);
 
-            return Ok("created success");
-        }
+        //     return Ok("created success");
+        // }
 
 
 

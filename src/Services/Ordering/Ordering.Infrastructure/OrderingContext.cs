@@ -20,6 +20,8 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfiguration(new OrderEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new OrderLineEntityTypeConfiguration());
         }
