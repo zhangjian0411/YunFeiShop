@@ -4,7 +4,12 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Exceptions
 {
     public class CartHasNoSelectedItemException : ApplicationException
     {
+        public Guid BuyerId { get; private set; }
+
         public CartHasNoSelectedItemException(Guid buyerId)
-            : base($"Cart - {{BuyerId: {buyerId}}} has not select a item.") { }
+            : base($"No item is selected in cart.") 
+            {
+                BuyerId = buyerId;
+            }
     }
 }

@@ -8,25 +8,25 @@ using ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
 {
-    public class UpdateOrCreateCartItemCommandHandler : IRequestHandler<UpdateOrCreateCartItemCommand, bool>
+    public class UpdateOrCreateCartLineCommandHandler : IRequestHandler<UpdateOrCreateCartLineCommand, bool>
     {
         private readonly ICartRepository _cartRepository;
 
-        public UpdateOrCreateCartItemCommandHandler(ICartRepository cartRepository)
+        public UpdateOrCreateCartLineCommandHandler(ICartRepository cartRepository)
         {
             _cartRepository = cartRepository;
         }
 
-        public async Task<bool> Handle(UpdateOrCreateCartItemCommand command, CancellationToken cancellationToken)
+        public async Task<bool> Handle(UpdateOrCreateCartLineCommand command, CancellationToken cancellationToken)
         {
             var cart = await _cartRepository.GetAsync(command.BuyerId);
-            if (cart == null) cart = new Cart(command.BuyerId);
+            cart = cart ?? new Cart(command.BuyerId);
 
-            var item = cart.Items.SingleOrDefault(i => i.ProductId == command.ProductId);
-            if (item == null) item = cart.AddItem(command.ProductId);
+            var line = cart.Lines.SingleOrDefault(i => i.ProductId == command.ProductId);
+            line = line ?? cart.AddItem(command.ProductId);
 
-            item.Quantity = command.Quantity;
-            item.Selected = command.Selected;
+            line.Quantity = command.Quantity;
+            line.Selected = command.Selected;
 
             _cartRepository.Update(cart);
 
@@ -35,9 +35,9 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
     }
 
     // Use for Idempotency in Command process
-    public class UpdateOrCreateCartItemIdentifiedCommandHandler : IdentifiedCommandHandler<UpdateOrCreateCartItemCommand, bool>
+    public class UpdateOrCreateCartLineIdentifiedCommandHandler : IdentifiedCommandHandler<UpdateOrCreateCartLineCommand, bool>
     {
-        public UpdateOrCreateCartItemIdentifiedCommandHandler(IMediator mediator, IRequestManager requestManager) : base(mediator, requestManager) { }
+        public UpdateOrCreateCartLineIdentifiedCommandHandler(IMediator mediator, IRequestManager requestManager) : base(mediator, requestManager) { }
 
         protected override bool CreateResultForDuplicateRequest()
         {

@@ -4,7 +4,12 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Exceptions
 {
     public class CartNotFoundException : ApplicationException
     {
+        public Guid BuyerId { get; private set; }
+
         public CartNotFoundException(Guid buyerId)
-            : base($"Cart - {{BuyerId: {buyerId}}} is not found.") { }
+            : base($"Cart is not found.") 
+            {
+                BuyerId = buyerId;
+            }
     }
 }

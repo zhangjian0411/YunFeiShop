@@ -41,20 +41,6 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
             return Ok(cart);
         }
 
-        [HttpPost("addtocart")]
-        public async Task<IActionResult> AddToCartAsync()
-        {
-            var command = new AddItemToCartCommand
-            {
-                BuyerId = _identityService.GetUserIdentity(),
-                ProductId = new Guid("11111112-1111-1111-1111-111111111111")
-            };
-            
-            await _mediator.Send(command);
-
-            return Ok();
-        }
-
         [HttpPut("checkout")]
         public async Task<IActionResult> CheckOutAsync([FromHeader(Name = "x-requestid")] string requestId)
         {
@@ -77,15 +63,15 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
             return Ok();
         }
 
-        [HttpPut("items")]
-        public async Task<IActionResult> UpdateOrCreateCartItemAsync(UpdateOrCreateCartItemRequest request, [FromHeader(Name = "x-requestid")] string requestId)
+        [HttpPut("lines")]
+        public async Task<IActionResult> UpdateOrCreateCartLineAsync(UpdateOrCreateCartLineRequest request, [FromHeader(Name = "x-requestid")] string requestId)
         {
             bool commandResult = false;
 
             if (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty)
             {
-                var command = _mapper.Map<UpdateOrCreateCartItemCommand>(request);
-                var identifiedCommand = new IdentifiedCommand<UpdateOrCreateCartItemCommand, bool>(command, guid);
+                var command = _mapper.Map<UpdateOrCreateCartLineCommand>(request);
+                var identifiedCommand = new IdentifiedCommand<UpdateOrCreateCartLineCommand, bool>(command, guid);
 
                 commandResult = await _mediator.Send(identifiedCommand);
             }
@@ -98,10 +84,10 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("items")]
-        public async Task<IActionResult> RemoveCartItemsAsync(RemoveCartItemsRequest request)
+        [HttpDelete("lines")]
+        public async Task<IActionResult> RemoveCartLinesAsync(RemoveCartLinesRequest request)
         {
-            var command = _mapper.Map<RemoveCartItemsCommand>(request);
+            var command = _mapper.Map<RemoveCartLinesCommand>(request);
 
             await _mediator.Send(command);
 

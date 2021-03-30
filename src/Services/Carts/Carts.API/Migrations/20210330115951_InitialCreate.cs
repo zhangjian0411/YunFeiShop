@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Migrations
+namespace Carts.API.Migrations
 {
     public partial class InitialCreate : Migration
     {

@@ -17,11 +17,6 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Infrastructure
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public Cart Add(Cart cart)
-        {
-            return _context.Carts.Add(cart).Entity;
-        }
-
         public void Update(Cart cart)
         {
             _context.Update(cart);
@@ -29,7 +24,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Infrastructure
 
         public async Task<Cart> GetAsync(Guid buyerId)
         {
-            return await _context.Carts.Include(c => c.Items).SingleOrDefaultAsync(o => o.BuyerId == buyerId);
+            return await _context.Carts.Include(c => c.Lines).SingleOrDefaultAsync(o => o.BuyerId == buyerId);
         }
     }
 }

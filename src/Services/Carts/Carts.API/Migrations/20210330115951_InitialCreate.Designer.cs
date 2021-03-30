@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZhangJian.YunFeiShop.Services.Carts.Infrastructure;
 
-namespace ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Migrations
+namespace Carts.API.Migrations
 {
     [DbContext(typeof(CartContext))]
-    [Migration("20210326083225_InitialCreate")]
+    [Migration("20210330115951_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

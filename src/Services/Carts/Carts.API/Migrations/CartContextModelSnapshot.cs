@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZhangJian.YunFeiShop.Services.Carts.Infrastructure;
 
-namespace ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Migrations
+namespace Carts.API.Migrations
 {
     [DbContext(typeof(CartContext))]
     partial class CartContextModelSnapshot : ModelSnapshot

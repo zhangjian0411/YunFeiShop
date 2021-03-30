@@ -18,7 +18,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAgg
             _orderLines = new List<OrderLine>();
         }
 
-        public static Order NewDraft(Guid buyerId, IEnumerable<OrderLine> orderLines)
+        public static Order Create(Guid buyerId, IEnumerable<OrderLine> orderLines)
         {
             var order = new Order();
             order.BuyerId = buyerId;

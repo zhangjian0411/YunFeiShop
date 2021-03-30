@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Abstractions;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Application.Commands;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Infrastructure.Idempotency;
@@ -18,21 +19,23 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
     {
         private readonly ICartRepository _cartRepository;
         private readonly IIntegrationEventService _integrationEventService;
+        private readonly ILogger<CheckOutCommandHandler> _logger;
 
-        public CheckOutCommandHandler(ICartRepository cartRepository, IIntegrationEventService integrationEventService)
+        public CheckOutCommandHandler(ICartRepository cartRepository, IIntegrationEventService integrationEventService, ILogger<CheckOutCommandHandler> logger)
         {
             _cartRepository = cartRepository;
             _integrationEventService = integrationEventService;
+            _logger = logger;
         }
 
         public async Task<bool> Handle(CheckOutCommand command, CancellationToken cancellationToken)
         {
-            var cartItems = await GetCheckOutCartItems(command.BuyerId);
+            var cartLines = await GetCheckOutCartLines(command.BuyerId);
 
             var integrationEvent = new UserCheckoutAcceptedIntegrationEvent 
             {
                 UserId = command.BuyerId,
-                CheckoutLines = cartItems.Select(i => new CheckoutLine { ProductId = i.ProductId, Quantity = i.Quantity }).ToArray()
+                CheckoutLines = cartLines.Select(i => new CheckoutLine { ProductId = i.ProductId, Quantity = i.Quantity }).ToArray()
             };
 
             await _integrationEventService.AddAndSaveEventAsync(integrationEvent);
@@ -40,15 +43,15 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
             return true;
         }
 
-        private async Task<IEnumerable<CartItem>> GetCheckOutCartItems(Guid buyerId)
+        private async Task<IEnumerable<CartLine>> GetCheckOutCartLines(Guid buyerId)
         {
             var cart = await _cartRepository.GetAsync(buyerId);
             if (cart == null) throw new CartNotFoundException(buyerId);
 
-            var selectedItems = cart.Items.Where(i => i.Selected);
-            if (selectedItems.Count() == 0) throw new CartHasNoSelectedItemException(buyerId);
+            var selectedLines = cart.Lines.Where(i => i.Selected);
+            if (selectedLines.Count() == 0) throw new CartHasNoSelectedItemException(buyerId);
 
-            return selectedItems;
+            return selectedLines;
         }
     }
     

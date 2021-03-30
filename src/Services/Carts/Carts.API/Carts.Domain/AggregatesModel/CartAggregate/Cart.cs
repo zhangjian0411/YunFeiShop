@@ -9,37 +9,36 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggrega
     {
         public Guid BuyerId { get; private set; }
 
-        private readonly List<CartItem> _items;
-        public IReadOnlyCollection<CartItem> Items => _items;
+        private readonly List<CartLine> _lines;
+        public IReadOnlyCollection<CartLine> Lines => _lines;
 
         public Cart(Guid buyerId)
         {
-            _items = new List<CartItem>();
-
             BuyerId = buyerId;
+            _lines = new List<CartLine>();
         }
 
-        public CartItem AddItem(Guid productId)
+        public CartLine AddItem(Guid productId)
         {
-            var item = _items.SingleOrDefault(i => i.ProductId == productId);
+            var line = _lines.SingleOrDefault(i => i.ProductId == productId);
 
-            if (item != null)
+            if (line != null)
             {
-                item.Quantity += 1;
-                item.Selected = true;
+                line.Quantity += 1;
+                line.Selected = true;
             }
             else
             {
-                item = new CartItem(productId, 1, true);
-                _items.Add(item);
+                line = new CartLine(productId, 1, true);
+                _lines.Add(line);
             }
 
-            return item;
+            return line;
         }
 
-        public void RemoveItems(Guid[] productIds)
+        public void RemoveLines(Guid[] productIds)
         {
-            _items.RemoveAll(i => productIds.Contains(i.ProductId));
+            _lines.RemoveAll(i => productIds.Contains(i.ProductId));
         }
     }
 }

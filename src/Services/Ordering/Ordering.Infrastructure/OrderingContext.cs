@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage;
 using ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAggregate;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace ZhangJian.YunFeiShop.Services.Ordering.Infrastructure
 {
@@ -16,7 +17,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Infrastructure
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderLine> OrderLines { get; set; }
 
-        public OrderingContext(DbContextOptions<OrderingContext> options, IMediator mediator) : base(options, mediator) { }
+        public OrderingContext(DbContextOptions<OrderingContext> options, IMediator mediator, ILogger<OrderingContext> logger) : base(options, mediator, logger) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

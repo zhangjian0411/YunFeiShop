@@ -13,7 +13,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Queries
 
         public Task<Cart> GetCartAsync(Guid buyerId)
         {
-            return _dbContext.Carts.Include(c => c.Items).AsNoTracking().SingleOrDefaultAsync(c => c.BuyerId == buyerId);
+            return _dbContext.Carts.Include(c => c.Lines).AsNoTracking().SingleOrDefaultAsync(c => c.BuyerId == buyerId);
         }
     }
 }

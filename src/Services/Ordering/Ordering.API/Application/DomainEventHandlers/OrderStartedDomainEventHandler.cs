@@ -23,7 +23,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.DomainEventHand
                 UserId = domainEvent.BuyerId,
                 OrderLines = domainEvent.Order.OrderLines.Select(line => new OrderLine { ProductId = line.ProductId }).ToArray()
             }; 
-            System.Console.WriteLine($"OrderStartedIntegrationEvent: {Newtonsoft.Json.JsonConvert.SerializeObject(integrEvent)}");
+            
             await _integrationEventService.AddAndSaveEventAsync(integrEvent);
         }
     }
