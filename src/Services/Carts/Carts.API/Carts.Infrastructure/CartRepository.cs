@@ -17,6 +17,11 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Infrastructure
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        public void Add(Cart cart)
+        {
+            _context.Add(cart);
+        }
+
         public void Update(Cart cart)
         {
             _context.Update(cart);

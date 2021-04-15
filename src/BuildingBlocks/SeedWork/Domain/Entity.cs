@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using MediatR;
 
 namespace ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Domain
@@ -23,7 +24,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Domain
 
         [NotMapped]
         private List<INotification> _domainEvents;
-        [NotMapped]
+        [NotMapped, JsonIgnore]
         public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
 
         public void AddDomainEvent(INotification eventItem)

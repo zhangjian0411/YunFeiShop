@@ -1,0 +1,59 @@
+admin:
+  access_log_path: "/dev/null"
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 9090
+
+static_resources:
+  listeners:
+  - address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 41100
+    per_connection_buffer_limit_bytes: 32768 # 32 KiB
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: ingress_http
+          http_filters:
+          - name: envoy.filters.http.router
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/c/"
+                route:
+                  auto_host_rewrite: true
+                  prefix_rewrite: "/catalog"
+                  cluster: catalog
+              - match:
+                  prefix: "/catalog"
+                route:
+                  auto_host_rewrite: true
+                  cluster: catalog
+  clusters:
+  - name: catalog
+    connect_timeout: 15s
+    type: LOGICAL_DNS
+    per_connection_buffer_limit_bytes: 32768 # 32 KiB
+    dns_lookup_family: V4_ONLY
+    load_assignment:
+      cluster_name: catalog
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: host.docker.internal
+                port_value: 5005
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        sni: host.docker.internal

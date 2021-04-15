@@ -1,15 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Domain;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate
 {
     public class Cart : Entity, IAggregateRoot
     {
+        [JsonIgnore]
+        public override Guid Id { get => base.Id; protected set => base.Id = value; }
+
         public Guid BuyerId { get; private set; }
 
-        private readonly List<CartLine> _lines;
+        private List<CartLine> _lines;
         public IReadOnlyCollection<CartLine> Lines => _lines;
 
         public Cart(Guid buyerId)

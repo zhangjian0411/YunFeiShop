@@ -74,6 +74,9 @@ namespace Ordering.API.Infrastructure.Migrations
                     b.Property<Guid>("BuyerId")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.ToTable("orders");

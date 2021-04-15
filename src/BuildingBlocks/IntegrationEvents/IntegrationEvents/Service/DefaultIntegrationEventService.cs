@@ -21,7 +21,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Services
         {
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _eventPersistenceService = eventPersistenceService;
+            _eventPersistenceService = eventPersistenceService ?? throw new ArgumentNullException(nameof(eventPersistenceService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 

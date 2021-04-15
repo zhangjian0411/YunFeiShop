@@ -1,0 +1,11 @@
+{
+    "csharp.referencesCodeLens.enabled": false,
+    "files.exclude": {
+        "**/bin/": true,
+        "**/obj/": true,
+        "**/Properties": true,
+        "**/.vscode/": true,
+        "**/*.db": true,
+        "**/.gitignore": true
+    },
+}

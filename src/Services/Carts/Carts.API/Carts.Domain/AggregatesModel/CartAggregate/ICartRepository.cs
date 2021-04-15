@@ -6,6 +6,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggrega
 {
     public interface ICartRepository: IRepository<Cart>
     {
+        void Add(Cart item);
         void Update(Cart item);
         Task<Cart> GetAsync(Guid buyerId);
     }

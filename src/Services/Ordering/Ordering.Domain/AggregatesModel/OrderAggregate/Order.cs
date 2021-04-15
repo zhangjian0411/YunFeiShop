@@ -13,7 +13,9 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAgg
         private readonly List<OrderLine> _orderLines;
         public IReadOnlyCollection<OrderLine> OrderLines => _orderLines;
 
-        protected Order()
+        public OrderStatus OrderStatus { get; private set; }
+
+        private Order()
         {
             _orderLines = new List<OrderLine>();
         }
@@ -23,6 +25,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAgg
             var order = new Order();
             order.BuyerId = buyerId;
             order._orderLines.AddRange(orderLines);
+            order.OrderStatus = OrderStatus.Submitted;
 
             order.AddOrderStartedDomainEvent(buyerId, order);
 

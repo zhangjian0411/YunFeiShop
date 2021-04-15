@@ -79,7 +79,7 @@ namespace Carts.API.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.CartItem", b =>
+            modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.CartLine", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -101,19 +101,19 @@ namespace Carts.API.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartLines");
                 });
 
-            modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.CartItem", b =>
+            modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.CartLine", b =>
                 {
                     b.HasOne("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.Cart", null)
-                        .WithMany("Items")
+                        .WithMany("Lines")
                         .HasForeignKey("CartId");
                 });
 
             modelBuilder.Entity("ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate.Cart", b =>
                 {
-                    b.Navigation("Items");
+                    b.Navigation("Lines");
                 });
 #pragma warning restore 612, 618
         }

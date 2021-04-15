@@ -3,11 +3,5 @@ using MediatR;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
 {
-    public class UpdateOrCreateCartLineCommand : IRequest<bool>
-    {
-        public Guid BuyerId { get; init; }
-        public Guid ProductId { get; init; }
-        public int Quantity { get; init; }
-        public bool Selected { get; init; }
-    }
+    public record UpdateOrCreateCartLineCommand(Guid BuyerId, Guid ProductId, int Quantity, bool Selected) : IRequest<bool>;
 }

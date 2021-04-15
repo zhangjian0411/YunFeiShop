@@ -24,7 +24,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.IntegrationEvents.Even
             var buyerId = @event.UserId;
             var productIds = @event.OrderLines.Select(ol => ol.ProductId).ToArray();
 
-            var removeCartItemsCommand = new RemoveCartLinesCommand { BuyerId = buyerId, ProductIds = productIds };
+            var removeCartItemsCommand = new RemoveCartLinesCommand(buyerId, productIds);
 
             return _mediator.Send(removeCartItemsCommand);
         }

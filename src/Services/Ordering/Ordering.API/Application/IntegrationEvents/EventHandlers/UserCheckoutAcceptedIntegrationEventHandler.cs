@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.Abstractions;
 using ZhangJian.YunFeiShop.Services.Ordering.API.Application.Commands;
 using ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEvents.Events;
-using static ZhangJian.YunFeiShop.Services.Ordering.API.Application.Commands.CreateOrderCommand;
+using static ZhangJian.YunFeiShop.Services.Ordering.API.Application.Commands.PlaceOrderCommand;
 
 namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEvents.EventHandlers
 {
@@ -22,7 +22,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEven
 
         public async Task Handle(UserCheckoutAcceptedIntegrationEvent @event)
         {
-            var command = new CreateOrderCommand(@event.UserId, @event.CheckoutLines.Select(cl => new OrderLine(cl.ProductId, "Hard Code", cl.Quantity)).ToArray());
+            var command = new PlaceOrderCommand(@event.UserId, @event.CheckoutLines.Select(cl => new OrderLine(cl.ProductId, "Hard Code", cl.Quantity)).ToArray());
             
             await _mediator.Send(command);
         }

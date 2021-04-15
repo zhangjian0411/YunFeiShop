@@ -12,6 +12,11 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Infrastructure
         public DbSet<CartLine> CartLines { get; set; }
 
         public CartContext(DbContextOptions<CartContext> options, IMediator mediator, ILogger<CartContext> logger) : base(options, mediator, logger) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 
 }

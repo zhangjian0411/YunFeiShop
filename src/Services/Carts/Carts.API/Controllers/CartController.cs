@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Application.Commands;
-using ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.RequestModels;
-using ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Services;
 using ZhangJian.YunFeiShop.Services.Carts.Application.Commands;
 using ZhangJian.YunFeiShop.Services.Carts.Application.Queries;
+using ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
 {
@@ -21,39 +19,24 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ICartQueries _cartQueries;
-        private readonly IIdentityService _identityService;
-        private readonly IMapper _mapper;
         private readonly ILogger<CartController> _logger;
-        public CartController(IMediator mediator, ICartQueries cartQueries, IIdentityService identityService, IMapper mapper, ILogger<CartController> logger)
+        public CartController(IMediator mediator, ICartQueries cartQueries, ILogger<CartController> logger)
         {
             _mediator = mediator;
             _cartQueries = cartQueries;
-            _identityService = identityService;
-            _mapper = mapper;
             _logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCartAsync()
+        #region Commands
+
+        [HttpPost("CheckOut")]
+        public async Task<IActionResult> CheckOutAsync(
+            CheckOutCommand command,
+            [FromHeader(Name = "x-requestid"), Required] Guid requestId)
         {
-            var cart = await _cartQueries.GetCartAsync(_identityService.GetUserIdentity());
+            var identifiedCommand = new IdentifiedCommand<CheckOutCommand, bool>(command, requestId);
 
-            return Ok(cart);
-        }
-
-        [HttpPut("checkout")]
-        public async Task<IActionResult> CheckOutAsync([FromHeader(Name = "x-requestid")] string requestId)
-        {
-            bool commandResult = false;
-
-            if (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty)
-            {
-                var identifiedCommand = new IdentifiedCommand<CheckOutCommand, bool>(
-                        new CheckOutCommand { BuyerId = _identityService.GetUserIdentity() },
-                        guid);
-
-                commandResult = await _mediator.Send(identifiedCommand);
-            }
+            var commandResult = await _mediator.Send(identifiedCommand);
 
             if (!commandResult)
             {
@@ -63,18 +46,14 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
             return Ok();
         }
 
-        [HttpPut("lines")]
-        public async Task<IActionResult> UpdateOrCreateCartLineAsync(UpdateOrCreateCartLineRequest request, [FromHeader(Name = "x-requestid")] string requestId)
+        [HttpPost("AddItemToCart")]
+        public async Task<IActionResult> AddItemToCartAsync(
+            AddItemToCartCommand command,
+            [FromHeader(Name = "x-requestid"), Required] Guid requestId)
         {
-            bool commandResult = false;
+            var identifiedCommand = new IdentifiedCommand<AddItemToCartCommand, bool>(command, requestId);
 
-            if (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty)
-            {
-                var command = _mapper.Map<UpdateOrCreateCartLineCommand>(request);
-                var identifiedCommand = new IdentifiedCommand<UpdateOrCreateCartLineCommand, bool>(command, guid);
-
-                commandResult = await _mediator.Send(identifiedCommand);
-            }
+            var commandResult = await _mediator.Send(identifiedCommand);
 
             if (!commandResult)
             {
@@ -84,14 +63,52 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("lines")]
-        public async Task<IActionResult> RemoveCartLinesAsync(RemoveCartLinesRequest request)
+        [HttpPut("UpdateOrCreateCartLine")]
+        public async Task<IActionResult> UpdateOrCreateCartLineAsync(
+            UpdateOrCreateCartLineCommand command,
+            [FromHeader(Name = "x-requestid"), Required] Guid requestId)
         {
-            var command = _mapper.Map<RemoveCartLinesCommand>(request);
+            var identifiedCommand = new IdentifiedCommand<UpdateOrCreateCartLineCommand, bool>(command, requestId);
 
-            await _mediator.Send(command);
+            var commandResult = await _mediator.Send(identifiedCommand);
+
+            if (!commandResult)
+            {
+                return BadRequest();
+            }
 
             return Ok();
         }
+
+        [HttpPut("RemoveCartLines")]
+        public async Task<IActionResult> RemoveCartLinesAsync(
+            RemoveCartLinesCommand command,
+            [FromHeader(Name = "x-requestid"), Required] Guid requestId)
+        {
+            var identifiedCommand = new IdentifiedCommand<RemoveCartLinesCommand, bool>(command, requestId);
+
+            var commandResult = await _mediator.Send(command);
+
+            if (!commandResult)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        #endregion
+
+        #region Queries
+
+        [HttpGet("{buyerId:guid}")]
+        public async Task<ActionResult<Cart>> GetCartAsync(Guid buyerId)
+        {
+            var cart = await _cartQueries.GetCartAsync(buyerId);
+
+            return Ok(cart ?? new Cart(buyerId));
+        }
+
+        #endregion
     }
 }

@@ -1,11 +1,8 @@
 using System;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
 {
-    public class RemoveCartLinesCommand : IRequest<bool>
-    {
-        public Guid BuyerId { get; init; }
-        public Guid[] ProductIds { get; init; }
-    }
+    public record RemoveCartLinesCommand(Guid BuyerId, Guid[] ProductIds) : IRequest<bool>;
 }

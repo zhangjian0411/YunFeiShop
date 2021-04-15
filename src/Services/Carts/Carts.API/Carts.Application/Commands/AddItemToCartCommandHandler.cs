@@ -23,11 +23,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
         public async Task<bool> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
         {
             var cart = await _cartRepository.GetAsync(request.BuyerId);
-
-            if (cart == null)
-            {
-                cart = new Cart(request.BuyerId);
-            }
+            cart = cart ?? new Cart(request.BuyerId);
 
             cart.AddItem(request.ProductId);
 

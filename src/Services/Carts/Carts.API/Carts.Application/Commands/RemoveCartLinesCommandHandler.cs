@@ -1,8 +1,9 @@
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Application.Commands;
+using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Infrastructure.Idempotency;
 using ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate;
 
 namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
@@ -32,6 +33,17 @@ namespace ZhangJian.YunFeiShop.Services.Carts.Application.Commands
             _cartRepository.Update(cart);
 
             return await _cartRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        }
+    }
+
+    // Use for Idempotency in Command process
+    public class RemoveCartLinesIdentifiedCommandHandler : IdentifiedCommandHandler<RemoveCartLinesCommand, bool>
+    {
+        public RemoveCartLinesIdentifiedCommandHandler(IMediator mediator, IRequestManager requestManager) : base(mediator, requestManager) { }
+
+        protected override bool CreateResultForDuplicateRequest()
+        {
+            return true;                // Ignore duplicate requests for creating order.
         }
     }
 }

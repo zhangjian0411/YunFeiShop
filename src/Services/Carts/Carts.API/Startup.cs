@@ -15,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork;
-using ZhangJian.YunFeiShop.Services.Carts.API.Infrastructure.Services;
 using ZhangJian.YunFeiShop.Services.Carts.Application.Queries;
 using ZhangJian.YunFeiShop.Services.Carts.Domain.AggregatesModel.CartAggregate;
 using ZhangJian.YunFeiShop.Services.Carts.Infrastructure;
@@ -50,11 +49,8 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API
 
             services.AddSeedWork<CartContext>("Carts");
 
-            services.AddAutoMapper(typeof(Startup));
-
             services.AddTransient<ICartQueries, CartQueries>();
             services.AddTransient<ICartRepository, CartRepository>();
-            services.AddTransient<IIdentityService, FakeIdentityService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

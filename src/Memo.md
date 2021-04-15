@@ -3,6 +3,9 @@
     at private async Task Consumer_Received(object sender, BasicDeliverEventArgs eventArgs) 
     at BuildingBlocks\IntegrationEvents\EventBus.RabbitMQ\EventBusRabbitMQ.cs 
 
+## When Ordering service in not online, the `UserCheckoutAcceptedIntegrationEvent` is not proccessed and `OrderStartedIntegrationEvent` is not produced. So the cart will not remove cartlines. It will produce duplicate orders. 
+    Does it need to handle? Or this is acceptable?
+
 ## AutoMapper: Destination object type must have a constructor with 0 args and properties must have set accessor, so the mapping can work.
 The constructor and set accessor could be `public`, `protected` or `private`.  
 For example:
@@ -34,4 +37,4 @@ public class AddProductToCartCommand : IRequest<bool>
 
 ## EF Core: DbContext.Update() method can also add new entity.
 
-## Commands: Command should be a record type in order to log its content. The record type overrides its ToString() method.
+## Docker: docker 18.03 加入了一个 feature，在容器中可以通过 host.docker.internal来访问主机
