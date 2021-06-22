@@ -1,0 +1,1 @@
+docker build ../src -f ../src/services/carts/carts.api/Dockerfile --tag=cart:dev
