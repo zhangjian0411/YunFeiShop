@@ -29,27 +29,9 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
 
         #region Commands
 
-        [HttpPost("CheckOut")]
-        public async Task<IActionResult> CheckOutAsync(
-            CheckOutCommand command,
-            [FromHeader(Name = "x-requestid"), Required] Guid requestId)
-        {
-            var identifiedCommand = new IdentifiedCommand<CheckOutCommand, bool>(command, requestId);
-
-            var commandResult = await _mediator.Send(identifiedCommand);
-
-            if (!commandResult)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
-        }
-
         [HttpPost("AddItemToCart")]
         public async Task<IActionResult> AddItemToCartAsync(
-            AddItemToCartCommand command,
-            [FromHeader(Name = "x-requestid"), Required] Guid requestId)
+            AddItemToCartCommand command, [FromHeader(Name = "x-requestid"), Required] Guid requestId)
         {
             var identifiedCommand = new IdentifiedCommand<AddItemToCartCommand, bool>(command, requestId);
 
@@ -65,8 +47,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
 
         [HttpPut("UpdateOrCreateCartLine")]
         public async Task<IActionResult> UpdateOrCreateCartLineAsync(
-            UpdateOrCreateCartLineCommand command,
-            [FromHeader(Name = "x-requestid"), Required] Guid requestId)
+            UpdateOrCreateCartLineCommand command, [FromHeader(Name = "x-requestid"), Required] Guid requestId)
         {
             var identifiedCommand = new IdentifiedCommand<UpdateOrCreateCartLineCommand, bool>(command, requestId);
 
@@ -82,8 +63,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API.Controllers
 
         [HttpPut("RemoveCartLines")]
         public async Task<IActionResult> RemoveCartLinesAsync(
-            RemoveCartLinesCommand command,
-            [FromHeader(Name = "x-requestid"), Required] Guid requestId)
+            RemoveCartLinesCommand command, [FromHeader(Name = "x-requestid"), Required] Guid requestId)
         {
             var identifiedCommand = new IdentifiedCommand<RemoveCartLinesCommand, bool>(command, requestId);
 

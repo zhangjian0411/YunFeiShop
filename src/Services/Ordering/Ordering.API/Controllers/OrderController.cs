@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ZhangJian.YunFeiShop.BuildingBlocks.SeedWork.Application.Commands;
 using ZhangJian.YunFeiShop.Services.Ordering.API.Application.Commands;
+using ZhangJian.YunFeiShop.Services.Ordering.API.Application.Queries;
+using ZhangJian.YunFeiShop.Services.Ordering.Domain.AggregatesModel.OrderAggregate;
 
 namespace ZhangJian.YunFeiShop.Services.Ordering.API.Controllers
 {
@@ -13,10 +16,12 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IOrderQueries _orderQueries;
 
-        public OrderController(IMediator mediator)
+        public OrderController(IMediator mediator, IOrderQueries orderQueries)
         {
             _mediator = mediator;
+            _orderQueries = orderQueries;
         }
         
         [HttpPost("PlaceOrder")]
@@ -35,5 +40,16 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Controllers
 
             return Ok();
         }
+
+        #region Queries
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersAsync([FromQuery, Required] Guid buyerId) {
+            var orders = await _orderQueries.GetOrdersAsync(buyerId);
+
+            return Ok (orders);
+        }
+
+        #endregion
     }
 }

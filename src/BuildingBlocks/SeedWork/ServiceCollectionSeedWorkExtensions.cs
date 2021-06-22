@@ -15,9 +15,14 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.SeedWork
     {
         public static IServiceCollection AddSeedWork<T>(this IServiceCollection services, string clientName) where T : DbContextBase
         {
+            return AddSeedWork<T>(services, clientName, "localhost");
+        }
+
+        public static IServiceCollection AddSeedWork<T>(this IServiceCollection services, string clientName, string mqHostName) where T : DbContextBase
+        {
             if (string.IsNullOrWhiteSpace(clientName)) throw new ArgumentException("The parameter 'clientName' must have a value.");
 
-            services.AddEventBusRabbitMQ(clientName);
+            services.AddEventBusRabbitMQ(clientName, mqHostName);
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
             

@@ -1,0 +1,1 @@
+docker build ../src -f ../src/services/ordering/ordering.api/Dockerfile --tag=ordering:dev

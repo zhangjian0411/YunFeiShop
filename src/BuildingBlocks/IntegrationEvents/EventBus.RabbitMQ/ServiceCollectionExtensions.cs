@@ -6,7 +6,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.EventBus.RabbitM
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEventBusRabbitMQ(this IServiceCollection services, string clientName)
+        public static IServiceCollection AddEventBusRabbitMQ(this IServiceCollection services, string clientName, string mqHostName)
         {
             services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
                 {
@@ -14,7 +14,7 @@ namespace ZhangJian.YunFeiShop.BuildingBlocks.IntegrationEvents.EventBus.RabbitM
 
                     var factory = new ConnectionFactory()
                     {
-                        HostName = "localhost",
+                        HostName = mqHostName,
                         DispatchConsumersAsync = true
                     };
 

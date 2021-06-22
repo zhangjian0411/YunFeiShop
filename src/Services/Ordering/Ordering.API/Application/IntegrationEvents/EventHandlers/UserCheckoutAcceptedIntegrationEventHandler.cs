@@ -22,7 +22,7 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.IntegrationEven
 
         public async Task Handle(UserCheckoutAcceptedIntegrationEvent @event)
         {
-            var command = new PlaceOrderCommand(@event.UserId, @event.CheckoutLines.Select(cl => new OrderLine(cl.ProductId, "Hard Code", cl.Quantity)).ToArray());
+            var command = new PlaceOrderCommand(@event.UserId, @event.CheckoutLines.Select(cl => new PlaceOrderCommandOrderLine(cl.ProductId, "Hard Code", cl.Quantity)).ToArray());
             
             await _mediator.Send(command);
         }

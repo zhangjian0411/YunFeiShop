@@ -1,0 +1,491 @@
+# Overwrite nginx-controller configuration values globally.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+data:
+  hsts: "false" # default is "true"
+  # Set a large header size which is needed for IdentityServer4 to store and sort out JWT
+  proxy-buffer-size: "128k"
+  proxy-buffers: "4 256k"
+  proxy-busy-buffers-size: "256k"
+  client-header-buffer-size: "64k"
+  http2-max-field-size: "16k"
+  http2-max-header-size: "128k"
+  large-client-header-buffers: "8 64k"
+  # End
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: identity-server-data-protection-keys
+  labels:
+    app: identity-server
+spec:
+  capacity:
+    storage: 100Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /C/Users/pc-amd/Source/data/identity-server/data-protection-keys
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - docker-desktop
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: identity-server-data-protection-keys
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      app: identity-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identityserver
+spec:
+  selector:
+    app: identityserver
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identityserver
+spec:
+  replicas: 1 # TODO: Need to deal with operational data to replicate multiple pods.
+  selector:
+    matchLabels:
+      app: identityserver
+  template:
+    metadata:
+      labels:
+        app: identityserver
+    spec:
+      containers:
+      - name: identityserver
+        image: identityserver:dev
+        env:
+          - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED # set this env to let ingress forward 'https' header to identityserver service through 'http'.
+            value: "true"
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Production"
+          - name: DataProtection__PersistKeysDirectory
+            value: /data-protection-kyes
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: protection-keys-directory
+          mountPath: /data-protection-kyes
+      volumes:
+      - name: protection-keys-directory
+        persistentVolumeClaim:
+          claimName: identity-server-data-protection-keys
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: bff-spa-shopping-data-protection-keys
+  labels:
+    app: bff-spa-shopping
+spec:
+  capacity:
+    storage: 100Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /C/Users/pc-amd/Source/data/bff-spa-shopping/data-protection-keys
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - docker-desktop
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bff-spa-shopping-data-protection-keys
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      app: bff-spa-shopping
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff-spa-shopping
+spec:
+  selector:
+    app: bff-spa-shopping
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff-spa-shopping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bff-spa-shopping
+  template:
+    metadata:
+      labels:
+        app: bff-spa-shopping
+    spec:
+      containers:
+      - name: bff-spa-shopping
+        image: bff-spa-shopping:dev
+        env:
+          - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED
+            value: "true"
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Development"
+          - name: ASPNETCORE_URLS
+            value: http://*
+          - name: DataProtection__PersistKeysDirectory
+            value: /data-protection-kyes
+          - name: Authentication__OpenIdConnect__Authority
+            value: https://idp.yunfei.local
+          - name: Services__Catalog
+            value: http://catalog
+          - name: Services__Cart
+            value: http://cart
+          - name: Services__Order
+            value: http://ordering
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: protection-keys-directory
+          mountPath: /data-protection-kyes
+      volumes:
+      - name: protection-keys-directory
+        persistentVolumeClaim:
+          claimName: bff-spa-shopping-data-protection-keys
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog
+spec:
+  selector:
+    app: catalog
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      containers:
+      - name: catalog
+        image: catalog:dev
+        env:
+          # - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED # set this env to let ingress forward 'https' header to identityserver service through 'http'.
+          #   value: "true"
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Development"
+          - name: ASPNETCORE_URLS
+            value: http://*
+          - name: Authentication__JWT__Authority
+            value: https://idp.yunfei.local
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - protocol: TCP
+      port: 5672
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cart-data
+  labels:
+    app: cart
+spec:
+  capacity:
+    storage: 100Mi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /C/Users/pc-amd/Source/data/carts
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - docker-desktop
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cart-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      app: cart
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+  labels:
+    app: cart
+spec:
+  selector:
+    app: cart
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: cart-data
+      containers:
+      - name: cart
+        image: cart:dev
+        volumeMounts:
+        - mountPath: "/app/data"
+          name: data
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://*
+          - name: Services__RabbitMQ
+            value: rabbitmq
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ordering-data
+  labels:
+    app: ordering
+spec:
+  capacity:
+    storage: 100Mi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /C/Users/pc-amd/Source/data/order
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - docker-desktop
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ordering-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      app: ordering
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ordering
+  labels:
+    app: ordering
+spec:
+  selector:
+    app: ordering
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ordering
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ordering
+  template:
+    metadata:
+      labels:
+        app: ordering
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: ordering-data
+      containers:
+      - name: ordering
+        image: ordering:dev
+        volumeMounts:
+        - mountPath: "/app/data"
+          name: data
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://*
+          - name: Services__RabbitMQ
+            value: rabbitmq
+        ports:
+        - containerPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: k8s-example-ingress
+  annotations:
+    # nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - demo.yunfei.com
+    secretName: demoyunfeicom-tls
+  - hosts:
+    - idp.yunfei.local
+    secretName: yunfei.local-tls
+  rules:
+    - host: demo.yunfei.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bff-spa-shopping
+                port:
+                  number: 80
+    - host: idp.yunfei.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: identityserver
+                port:
+                  number: 80

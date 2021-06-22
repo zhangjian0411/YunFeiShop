@@ -1,0 +1,1 @@
+docker build ../../../misc/dev-certs -f Dockerfile.dev --tag=dotnet-aspnet-with-devcerts:5.0-r0

@@ -1,0 +1,3 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS base
+COPY ["./*.crt", "/usr/local/share/ca-certificates"]
+RUN update-ca-certificates

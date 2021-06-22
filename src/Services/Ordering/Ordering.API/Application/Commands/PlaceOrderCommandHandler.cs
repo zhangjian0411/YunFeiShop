@@ -24,7 +24,9 @@ namespace ZhangJian.YunFeiShop.Services.Ordering.API.Application.Commands
             var order = Order.Create(request.UserId, orderLines);
             _orderRepository.Add(order);
 
-            return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+            var result = await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+
+            return result;
         }
     }
 

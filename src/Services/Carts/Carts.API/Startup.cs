@@ -41,13 +41,13 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API
 
             services.AddDbContext<CartContext>(options =>
             {
-                options.UseSqlite("Data Source=carts.db",
+                options.UseSqlite("Data Source=./data/carts.db",
                     sqliteOptions => sqliteOptions.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name));
             });
 
             services.AddMediatR(typeof(Startup));
 
-            services.AddSeedWork<CartContext>("Carts");
+            services.AddSeedWork<CartContext>("Carts", Configuration["Services:RabbitMQ"]);
 
             services.AddTransient<ICartQueries, CartQueries>();
             services.AddTransient<ICartRepository, CartRepository>();
@@ -63,7 +63,7 @@ namespace ZhangJian.YunFeiShop.Services.Carts.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cart v1"));
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
